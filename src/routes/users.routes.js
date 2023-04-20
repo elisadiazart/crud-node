@@ -11,4 +11,6 @@ userRoutes.post('/', controller.createUser)
 
 userRoutes.delete('/:id', controller.deleteUser)
 
+userRoutes.patch('/:id', controller.patchUser)
+
 module.exports = userRoutes

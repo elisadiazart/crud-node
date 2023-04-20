@@ -38,7 +38,7 @@ controller.createUser = (req, res) => {
             return res.status(409).send('Usuario Duplicado')
         }
 
-        newData.id = v4()
+        newData.userId = v4()
 
         jsonData.push(newData)
 
@@ -51,11 +51,11 @@ controller.createUser = (req, res) => {
 controller.deleteUser = (req, res) => {
     fs.readFile('./data/users.json', (err, data)=> {
         if (err) throw err;
-        const newData = req.params.id
+        const newData = req.params.userId
 
         const jsonData = JSON.parse(data)
 
-        const userIndex = jsonData.findIndex(user => user.id === newData)
+        const userIndex = jsonData.findIndex(user => user.userId === newData)
         
         if(userIndex === -1){
             return res.status(409).send('Ese usuario no existe')
@@ -66,6 +66,35 @@ controller.deleteUser = (req, res) => {
         fs.writeFile(usersFile, JSON.stringify(jsonData), err=> {
             if(err) return res.status(500).send('Error al guardar el usuario')
             res.end()
+        })
+
+    })
+}
+
+controller.patchUser = (req, res) => {
+    fs.readFile('./data/users.json', (err, data)=> {
+        if (err) throw err;
+        const userId = req.params.id
+
+        const jsonData = JSON.parse(data)
+
+        const userPosition = jsonData.findIndex(user => user.userId === userId)
+
+
+
+        if(userPosition===-1){
+            return res.status(404).send('Ese usuario no existe')
+        }
+
+        const user = jsonData[userPosition]
+
+        const userPatched = {...user, ...req.body}
+
+        jsonData[userPosition] = userPatched
+        
+        fs.writeFile(usersFile, JSON.stringify(jsonData), err=> {
+            if(err) return res.status(500).send('Error al guardar el usuario')
+            return res.status(200).send('Usuario actualizado')
         })
 
     })
