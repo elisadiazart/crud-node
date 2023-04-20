@@ -80,10 +80,17 @@ controller.patchUser = (req, res) => {
 
         const userPosition = jsonData.findIndex(user => user.userId === userId)
 
-
-
         if(userPosition===-1){
             return res.status(404).send('Ese usuario no existe')
+        }
+
+        if(req.body.email){
+
+            const userCheck = jsonData.some(user => user.email === req.body.email)
+
+            if(userCheck){
+                return res.status(409).send('No se ha podido actualizar el email porque ya esta en uso')
+            }
         }
 
         const user = jsonData[userPosition]
